@@ -102,7 +102,7 @@ function setupRouterCommon() {
     cp -r /etc/bind /data/bind ; \
     mkdir -p /data/tftpboot/ipxe ; \
     mkdir /data/tftpboot/networkboot"
-  ${SCP} ${OKD_LAB_PATH}/boot-files/* root@${router_ip}:/data/tftpboot/*
+  ${SCP} ${OKD_LAB_PATH}/boot-files/* root@${router_ip}:/data/tftpboot/
   ${SCP} ${WORK_DIR}/boot.ipxe root@${router_ip}:/data/tftpboot/boot.ipxe
   ${SCP} -r ${WORK_DIR}/dns/* root@${router_ip}:/data/bind/
   ${SSH} root@${router_ip} "mkdir -p /data/var/named/dynamic ; \
