@@ -154,6 +154,7 @@ function configControlPlane() {
   fi
   # Create DNS Entries:
   ingress_ip=$(yq e ".cluster.ingress-ip-addr" ${CLUSTER_CONFIG})
+  echo "111111111111${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}."
   echo "${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "*.apps.${CLUSTER_NAME}.${DOMAIN}.     IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "api.${CLUSTER_NAME}.${DOMAIN}.        IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
