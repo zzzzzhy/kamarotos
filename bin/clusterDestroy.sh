@@ -178,7 +178,7 @@ function destroy() {
       kill $(ps -ef | grep qemu | grep bootstrap | awk '{print $2}')
       rm -rf ${WORK_DIR}/bootstrap
     else
-      host_name="${CLUSTER_NAME}-bootstrap"
+      host_name="${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}"
       kvm_host=$(yq e ".bootstrap.kvm-host" ${CLUSTER_CONFIG})
       deleteNodeVm ${host_name} ${kvm_host}.${BOOTSTRAP_KVM_DOMAIN}
     fi

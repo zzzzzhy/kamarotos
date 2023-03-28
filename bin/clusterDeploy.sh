@@ -154,12 +154,12 @@ function configControlPlane() {
   fi
   # Create DNS Entries:
   ingress_ip=$(yq e ".cluster.ingress-ip-addr" ${CLUSTER_CONFIG})
-  echo "bootstrap.${CLUSTER_NAME}.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/forward.zone
+  echo "${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "*.apps.${CLUSTER_NAME}.${DOMAIN}.     IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "api.${CLUSTER_NAME}.${DOMAIN}.        IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "api-int.${CLUSTER_NAME}.${DOMAIN}.    IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   bs_o4=$(echo ${bs_ip_addr} | cut -d"." -f4)
-  echo "${bs_o4}    IN      PTR     bootstrap.${CLUSTER_NAME}.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/reverse.zone
+  echo "${bs_o4}    IN      PTR     ${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/reverse.zone
   let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
   for node_index in $(seq 1 ${node_count})
   do
