@@ -4,7 +4,7 @@ function configRouter() {
   WWAN="false"
   FORMAT_SD="false"
   GL_MODEL=""
-  INIT_IP=192.168.8.1
+  INIT_IP=192.168.5.1
   wifi_channel=3
   WORK_DIR=${OKD_LAB_PATH}/work-dir-router
   rm -rf ${WORK_DIR}
@@ -143,9 +143,9 @@ EOF
 function getBootFile() {
   mkdir -p ${OKD_LAB_PATH}/boot-files
   wget http://boot.ipxe.org/ipxe.efi -O ${OKD_LAB_PATH}/boot-files/ipxe.efi
-  wget http://boot.ipxe.org/ipxe.efi -O ${OKD_LAB_PATH}/boot-files/ipxe.efi
-  wget http://boot.ipxe.org/ipxe.efi -O ${OKD_LAB_PATH}/boot-files/ipxe.efi
-  wget http://boot.ipxe.org/ipxe.efi -O ${OKD_LAB_PATH}/boot-files/ipxe.efi
+  wget http://boot.ipxe.org/undionly.kpxe -O ${OKD_LAB_PATH}/boot-files/undionly.kpxe
+  wget http://boot.ipxe.org/tinycore.ipxe -O ${OKD_LAB_PATH}/boot-files/tinycore.ipxe
+  wget http://boot.ipxe.org/snponly.efi -O ${OKD_LAB_PATH}/boot-files/snponly.efi
 }
 
 function initMicroSD() {
