@@ -2,7 +2,7 @@ cluster:
   name: okd4
   cluster-cidr: 10.100.0.0/14
   service-cidr: 172.30.0.0/16
-  remote-registry: quay.io/okd/scos-release
+  remote-registry: quay.io/openshift/okd
   butane-version: v0.16.0
   butane-variant: fcos
   butane-spec-version: 1.4.0

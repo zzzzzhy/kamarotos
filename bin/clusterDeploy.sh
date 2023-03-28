@@ -154,13 +154,12 @@ function configControlPlane() {
   fi
   # Create DNS Entries:
   ingress_ip=$(yq e ".cluster.ingress-ip-addr" ${CLUSTER_CONFIG})
-  echo "111111111111${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}."
-  echo "${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/forward.zone
+  echo "${CLUSTER_NAME}-bootstrap.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "*.apps.${CLUSTER_NAME}.${DOMAIN}.     IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "api.${CLUSTER_NAME}.${DOMAIN}.        IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   echo "api-int.${CLUSTER_NAME}.${DOMAIN}.    IN      A      ${ingress_ip} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   bs_o4=$(echo ${bs_ip_addr} | cut -d"." -f4)
-  echo "${bs_o4}    IN      PTR     ${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/reverse.zone
+  echo "${bs_o4}    IN      PTR     ${CLUSTER_NAME}-bootstrap.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/reverse.zone
   let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
   for((i=0;i<${node_count};i++))
   do
@@ -196,10 +195,10 @@ function configControlPlane() {
     createButaneConfig ${ip_addr} ${host_name}.${DOMAIN} ${mac_addr} master ${platform} ${config_ceph} ${boot_dev}
     createPxeFile ${mac_addr} ${platform} ${boot_dev} ${host_name} ${ip_addr}
     # Create control plane node DNS Records:
-    echo "${host_name}.${CLUSTER_NAME}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
+    echo "${host_name}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
     echo "etcd-${i}.${CLUSTER_NAME}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
     o4=$(echo ${ip_addr} | cut -d"." -f4)
-    echo "${o4}    IN      PTR     ${host_name}.${CLUSTER_NAME}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/reverse.zone
+    echo "${o4}    IN      PTR     ${host_name}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/reverse.zone
   done
   # Create DNS SRV Records:
   for((i=0;i<${node_count};i++))

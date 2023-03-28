@@ -191,7 +191,7 @@ cat << EOF > ${WORK_DIR}/dns-work-dir/forward.zone
 *.apps.${CLUSTER_NAME}.${DOMAIN}.     IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 api.${CLUSTER_NAME}.${DOMAIN}.        IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 api-int.${CLUSTER_NAME}.${DOMAIN}.    IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
-${host_name}.${CLUSTER_NAME}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
+${host_name}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 etcd-0.${CLUSTER_NAME}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 _etcd-server-ssl._tcp.${CLUSTER_NAME}.${DOMAIN}    86400     IN    SRV     0    10    2380    etcd-0.${CLUSTER_NAME}.${DOMAIN}. ; ${CLUSTER_NAME}-${DOMAIN}-cp
 EOF
@@ -199,7 +199,7 @@ EOF
 o4=$(echo ${ip_addr} | cut -d"." -f4)
 
 cat << EOF > ${WORK_DIR}/dns-work-dir/reverse.zone
-${o4}    IN      PTR     ${host_name}.${CLUSTER_NAME}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp
+${o4}    IN      PTR     ${host_name}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp
 EOF
 
 }
@@ -210,13 +210,13 @@ function createSnoDNS() {
   local bs_ip_addr=${3}
 
 cat << EOF > ${WORK_DIR}/dns-work-dir/forward.zone
-${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs
+${CLUSTER_NAME}-bootstrap.${DOMAIN}.  IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs
 *.apps.${CLUSTER_NAME}.${DOMAIN}.     IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 api.${CLUSTER_NAME}.${DOMAIN}.        IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 api.${CLUSTER_NAME}.${DOMAIN}.        IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs
 api-int.${CLUSTER_NAME}.${DOMAIN}.    IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 api-int.${CLUSTER_NAME}.${DOMAIN}.    IN      A      ${bs_ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-bs
-${host_name}.${CLUSTER_NAME}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
+${host_name}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 etcd-0.${CLUSTER_NAME}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp
 _etcd-server-ssl._tcp.${CLUSTER_NAME}.${DOMAIN}    86400     IN    SRV     0    10    2380    etcd-0.${CLUSTER_NAME}.${DOMAIN}. ; ${CLUSTER_NAME}-${DOMAIN}-cp
 EOF
@@ -225,7 +225,7 @@ o4=$(echo ${ip_addr} | cut -d"." -f4)
 bs_o4=$(echo ${bs_ip_addr} | cut -d"." -f4)
 cat << EOF > ${WORK_DIR}/dns-work-dir/reverse.zone
 ${o4}    IN      PTR     ${host_name}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp
-${bs_o4}    IN      PTR     ${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs
+${bs_o4}    IN      PTR     ${CLUSTER_NAME}-bootstrap.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs
 EOF
 
 }
