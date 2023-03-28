@@ -162,20 +162,20 @@ function configControlPlane() {
   bs_o4=$(echo ${bs_ip_addr} | cut -d"." -f4)
   echo "${bs_o4}    IN      PTR     ${CLUSTER_NAME}-bootstrap.${CLUSTER_NAME}.${DOMAIN}.   ; ${CLUSTER_NAME}-${DOMAIN}-bs" >> ${WORK_DIR}/dns-work-dir/reverse.zone
   let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
-  for node_index in $(seq 1 ${node_count})
+  for((i=0;i<${node_count};i++))
   do
-    ip_addr=$(yq e ".control-plane.okd-hosts.[${node_index}].ip-addr" ${CLUSTER_CONFIG})
-    host_name=${CLUSTER_NAME}-master-${node_index}
-    yq e ".control-plane.okd-hosts.[${node_index}].name = \"${host_name}\"" -i ${CLUSTER_CONFIG}
+    ip_addr=$(yq e ".control-plane.okd-hosts.[${i}].ip-addr" ${CLUSTER_CONFIG})
+    host_name=${CLUSTER_NAME}-master-${i}
+    yq e ".control-plane.okd-hosts.[${i}].name = \"${host_name}\"" -i ${CLUSTER_CONFIG}
     if [[ ${metal} == "true" ]]
     then
-      boot_dev=$(yq e ".control-plane.okd-hosts.[${node_index}].boot-dev" ${CLUSTER_CONFIG})
+      boot_dev=$(yq e ".control-plane.okd-hosts.[${i}].boot-dev" ${CLUSTER_CONFIG})
     else
       
       memory=$(yq e ".control-plane.node-spec.memory" ${CLUSTER_CONFIG})
       cpu=$(yq e ".control-plane.node-spec.cpu" ${CLUSTER_CONFIG})
       root_vol=$(yq e ".control-plane.node-spec.root-vol" ${CLUSTER_CONFIG})
-      kvm_host=$(yq e ".control-plane.okd-hosts.[${node_index}].kvm-host" ${CLUSTER_CONFIG})
+      kvm_host=$(yq e ".control-plane.okd-hosts.[${i}].kvm-host" ${CLUSTER_CONFIG})
       boot_dev="/dev/sda"
       if [[ ${ceph_node} == "true" ]]
       then
@@ -184,7 +184,7 @@ function configControlPlane() {
         ceph_vol=0
       fi
       # Create the VM
-      createOkdVmNode ${ip_addr} ${host_name} ${kvm_host}.${DOMAIN} master ${memory} ${cpu} ${root_vol} ${ceph_vol} ".control-plane.okd-hosts.[${node_index}].mac-addr"
+      createOkdVmNode ${ip_addr} ${host_name} ${kvm_host}.${DOMAIN} master ${memory} ${cpu} ${root_vol} ${ceph_vol} ".control-plane.okd-hosts.[${i}].mac-addr"
     fi
     # Create the ignition and iPXE boot files
      platform=qemu
@@ -192,19 +192,19 @@ function configControlPlane() {
     then
       platform=metal
     fi
-    mac_addr=$(yq e ".control-plane.okd-hosts.[${node_index}].mac-addr" ${CLUSTER_CONFIG})
+    mac_addr=$(yq e ".control-plane.okd-hosts.[${i}].mac-addr" ${CLUSTER_CONFIG})
     createButaneConfig ${ip_addr} ${host_name}.${DOMAIN} ${mac_addr} master ${platform} ${config_ceph} ${boot_dev}
     createPxeFile ${mac_addr} ${platform} ${boot_dev} ${host_name} ${ip_addr}
     # Create control plane node DNS Records:
     echo "${host_name}.${CLUSTER_NAME}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
-    echo "etcd-${node_index}.${CLUSTER_NAME}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
+    echo "etcd-${i}.${CLUSTER_NAME}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
     o4=$(echo ${ip_addr} | cut -d"." -f4)
     echo "${o4}    IN      PTR     ${host_name}.${CLUSTER_NAME}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/reverse.zone
   done
   # Create DNS SRV Records:
-  for node_index in 0 1 2
+  for((i=0;i<${node_count};i++))
   do
-    echo "_etcd-server-ssl._tcp.${CLUSTER_NAME}.${DOMAIN}    86400     IN    SRV     0    10    2380    etcd-${node_index}.${CLUSTER_NAME}.${DOMAIN}. ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
+    echo "_etcd-server-ssl._tcp.${CLUSTER_NAME}.${DOMAIN}    86400     IN    SRV     0    10    2380    etcd-${i}.${CLUSTER_NAME}.${DOMAIN}. ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
   done
   # Create The HA-Proxy Load Balancer
   createLbConfig
