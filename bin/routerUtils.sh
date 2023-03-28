@@ -64,7 +64,7 @@ function initRouter() {
 }
 
 function setupRouter() {
-  ${SSH} root@${router_ip} "opkg update && opkg install ip-full procps-ng-ps bind-server bind-tools bash sfdisk rsync resize2fs wget block-mount wipefs coreutils-nohup"
+  ${SSH} root@${router_ip} "opkg update && opkg install curl ip-full procps-ng-ps bind-server bind-tools bash sfdisk rsync resize2fs wget block-mount wipefs coreutils-nohup"
   createDhcpConfig ${EDGE_ROUTER} ${LAB_DOMAIN}
   createIpxeHostConfig ${EDGE_ROUTER}
   createRouterDnsConfig  ${EDGE_ROUTER} ${LAB_DOMAIN} ${EDGE_ARPA} "edge"
@@ -78,7 +78,6 @@ function setupHaProxy() {
   ${SSH} root@${router_ip} "opkg update ; \
     opkg install haproxy"
   ${SSH} root@${router_ip} "mv /etc/haproxy.cfg /etc/haproxy.cfg.orig ; \
-    addgroup haproxy ; \
     mkdir -p /data/haproxy ; \
     rm -f /etc/init.d/haproxy"
 }
@@ -153,6 +152,9 @@ function initMicroSD() {
   local router_ip=${1}
   local format=${2}
   ${SSH} root@${router_ip} "mkdir -p /root/bin ; \
+      mkfs.ext4 /dev/sdb ; \
+      mkdir /usr/local;\
+      mount /dev/sdb /usr/local ; \
       mkdir -p /usr/local/www/install/kickstart ; \
       mkdir /usr/local/www/install/postinstall ; \
       mkdir /usr/local/www/install/fcos ; \
