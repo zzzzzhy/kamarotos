@@ -248,6 +248,7 @@ function setRelease() {
   if [[ ${release_set} == "true" ]]
   then
     export OKD_RELEASE=$(yq e ".cluster.release" ${CLUSTER_CONFIG})
+    echo "$OKD_RELEASE--------------------------------"
     if [[ ! -d ${OKD_LAB_PATH}/okd-cmds/${OKD_RELEASE} ]]
     then
       if [[ $(yq ".cluster | has(\"scos\")" ${CLUSTER_CONFIG}) == "true" ]] && [[ $(yq e ".cluster.scos" ${CLUSTER_CONFIG}) == "true" ]]

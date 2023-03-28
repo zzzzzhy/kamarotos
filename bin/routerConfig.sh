@@ -157,12 +157,6 @@ EOF
 function createIpxeHostConfig() {
 
   local router_ip=${1}
-  
-  if [[ ${GL_MODEL} != "GL-AXT1800" ]]
-  then
-  ${SSH} root@${router_ip} "opkg update ; \
-    opkg install uhttpd ; \
-    /etc/init.d/uhttpd enable"
 
 cat << EOF >> ${WORK_DIR}/uci.batch
 del_list uhttpd.main.listen_http="[::]:80"
@@ -174,7 +168,6 @@ add_list uhttpd.main.listen_https="${router_ip}:443"
 set uhttpd.main.home='/www'
 set uhttpd.main.redirect_https='0'
 EOF
-fi
 
 CENTOS_MIRROR=$(yq e ".centos-mirror" ${LAB_CONFIG_FILE})
 
@@ -320,8 +313,8 @@ global
     chroot      /data/haproxy
     pidfile     /var/run/haproxy.pid
     maxconn     50000
-    user        haproxy
-    group       haproxy
+    user        root
+    group       root
     daemon
 
     stats socket /data/haproxy/stats

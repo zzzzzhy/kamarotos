@@ -63,29 +63,27 @@ function createLbConfig() {
     /etc/init.d/network reload ; \
     sleep 10"
 
-  checkRouterModel ${lb_ip}
-  if [[ ${GL_MODEL} == "GL-AXT1800" ]]
-  then
-    configNginx ${lb_ip}
-    ${SCP} ${WORK_DIR}/nginx-${CLUSTER_NAME}.conf root@${DOMAIN_ROUTER}:/usr/local/nginx/nginx-${CLUSTER_NAME}.conf
-    ${SSH} root@${DOMAIN_ROUTER} "/etc/init.d/nginx restart"
-  else
-    configHaProxy ${lb_ip}
-    ${SCP} ${WORK_DIR}/haproxy-${CLUSTER_NAME}.cfg root@${DOMAIN_ROUTER}:/etc/haproxy-${CLUSTER_NAME}.cfg
-    ${SCP} ${WORK_DIR}/haproxy-${CLUSTER_NAME}.init root@${DOMAIN_ROUTER}:/etc/init.d/haproxy-${CLUSTER_NAME}
-    ${SSH} root@${DOMAIN_ROUTER} "chmod 644 /etc/haproxy-${CLUSTER_NAME}.cfg ; \
-      chmod 750 /etc/init.d/haproxy-${CLUSTER_NAME} ; \
-      /etc/init.d/haproxy-${CLUSTER_NAME} enable ; \
-      /etc/init.d/haproxy-${CLUSTER_NAME} start"
-  fi
+  configHaProxy ${lb_ip}
+  ${SCP} ${WORK_DIR}/haproxy-${CLUSTER_NAME}.cfg root@${DOMAIN_ROUTER}:/etc/haproxy-${CLUSTER_NAME}.cfg
+  ${SCP} ${WORK_DIR}/haproxy-${CLUSTER_NAME}.init root@${DOMAIN_ROUTER}:/etc/init.d/haproxy-${CLUSTER_NAME}
+  ${SSH} root@${DOMAIN_ROUTER} "chmod 644 /etc/haproxy-${CLUSTER_NAME}.cfg ; \
+    chmod 750 /etc/init.d/haproxy-${CLUSTER_NAME} ; \
+    /etc/init.d/haproxy-${CLUSTER_NAME} enable ; \
+    /etc/init.d/haproxy-${CLUSTER_NAME} start"
 }
 
 function createBootstrapNode() {
   host_name=${CLUSTER_NAME}-bootstrap
+  metal=$(yq e ".control-plane.metal" ${CLUSTER_CONFIG})
   yq e ".bootstrap.name = \"${host_name}\"" -i ${CLUSTER_CONFIG}
   bs_ip_addr=$(yq e ".bootstrap.ip-addr" ${CLUSTER_CONFIG})
   boot_dev=/dev/sda
-  platform=qemu
+  if [[ "${metal}" == "true" ]]
+  then
+    platform=metal
+  else
+    platform=qemu
+  fi
   if [[ $(yq e ".bootstrap.metal" ${CLUSTER_CONFIG}) == "false" ]]
   then
     kvm_host=$(yq e ".bootstrap.kvm-host" ${CLUSTER_CONFIG})
@@ -101,7 +99,7 @@ function createBootstrapNode() {
 }
 
 function configSno() {
-  BIP=false
+  BIP=true
   metal=$(yq e ".control-plane.metal" ${CLUSTER_CONFIG})
   ip_addr=$(yq e ".control-plane.okd-hosts.[0].ip-addr" ${CLUSTER_CONFIG})
   host_name=${CLUSTER_NAME}-node

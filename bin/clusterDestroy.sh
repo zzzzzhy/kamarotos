@@ -42,16 +42,10 @@ function deleteControlPlane() {
   if [[ ${RESET_LB} == "true" ]]
   then
     INTERFACE=$(echo "${CLUSTER_NAME//-/_}" | tr "[:upper:]" "[:lower:]")
-    if [[ ${GL_MODEL} == "GL-AXT1800" ]]
-    then
-      ${SSH} root@${DOMAIN_ROUTER} "rm /usr/local/nginx/nginx-${CLUSTER_NAME}.conf ; \
-      /etc/init.d/nginx restart"
-    else
     ${SSH} root@${DOMAIN_ROUTER} "/etc/init.d/haproxy-${CLUSTER_NAME} stop ; \
       /etc/init.d/haproxy-${CLUSTER_NAME} disable ; \
       rm -f /etc/init.d/haproxy-${CLUSTER_NAME} ; \
       rm -f /etc/haproxy-${CLUSTER_NAME}.cfg"
-    fi
     ${SSH} root@${DOMAIN_ROUTER} "uci delete network.${INTERFACE}_lb ; \
       uci commit ; \
       /etc/init.d/network reload; \
@@ -63,7 +57,6 @@ function deleteControlPlane() {
 function destroy() {
   P_CMD="poweroff"
   SNO="false"
-  checkRouterModel ${DOMAIN_ROUTER}
 
   for i in "$@"
   do
@@ -198,17 +191,10 @@ function destroy() {
     fi
     if [[ ${SNO} == "false" ]]
     then
-      if [[ ${GL_MODEL} == "GL-AXT1800" ]]
-      then
-        ${SSH} root@${DOMAIN_ROUTER} "cat /usr/local/nginx/nginx-${CLUSTER_NAME}.conf | grep -v bootstrap > /usr/local/nginx/nginx-${CLUSTER_NAME}.no-bootstrap ; \
-          mv /usr/local/nginx/nginx-${CLUSTER_NAME}.no-bootstrap /usr/local/nginx/nginx-${CLUSTER_NAME}.conf ; \
-          /etc/init.d/nginx restart"
-      else
         ${SSH} root@${DOMAIN_ROUTER} "cat /etc/haproxy-${CLUSTER_NAME}.cfg | grep -v bootstrap > /etc/haproxy-${CLUSTER_NAME}.no-bootstrap ; \
         mv /etc/haproxy-${CLUSTER_NAME}.no-bootstrap /etc/haproxy-${CLUSTER_NAME}.cfg ; \
         /etc/init.d/haproxy-${CLUSTER_NAME} stop ; \
         /etc/init.d/haproxy-${CLUSTER_NAME} start"
-      fi
     fi
   fi
 

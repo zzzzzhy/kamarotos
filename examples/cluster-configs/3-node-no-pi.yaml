@@ -1,41 +1,54 @@
 cluster:
   name: okd4
-  cluster-cidr: 10.88.0.0/14
-  service-cidr: 172.20.0.0/16
-  remote-registry: quay.io/openshift/okd
+  cluster-cidr: 10.100.0.0/14
+  service-cidr: 172.30.0.0/16
+  remote-registry: quay.io/okd/scos-release
   butane-version: v0.16.0
-  butane-spec-version: 1.4.0
   butane-variant: fcos
+  butane-spec-version: 1.4.0
   ingress-ip-addr: 10.11.12.2
 bootstrap:
-  metal: false
-  node-spec:
-    memory: 12288
-    cpu: 4
-    root-vol: 50
-  kvm-host: kvm-host01
-  ip-addr: 10.11.12.49
+  metal: true
+  # node-spec:
+  #   memory: 12288
+  #   cpu: 4
+  #   root-vol: 50
+  mac-addr: "00:0c:29:a1:4b:69"
+  kvm-host: dev-host
+  boot-dev: /dev/sda
+  # kvm-domain: my.multi-region.lab
+  ip-addr: 10.11.12.227
 control-plane:
-  metal: false
-  node-spec:
-    memory: 20480
-    cpu: 8
-    root-vol: 100
-  ceph:
-    ceph-dev: sdb
-    ceph-vol: 200
-    type: disk
+  metal: true
   okd-hosts:
-    - kvm-host: kvm-host01
-      ip-addr: 10.11.12.60
-    - kvm-host: kvm-host01
-      ip-addr: 10.11.12.61
-    - kvm-host: kvm-host01
-      ip-addr: 10.11.12.62
-kvm-hosts:
-  - host-name: kvm-host01
-    mac-addr: "YOUR_HOST_MAC_HERE"
-    ip-addr: 10.11.12.200
-    disks:
-      disk1: nvme0n1
-      disk2: NA
+    - mac-addr: "00:0c:29:71:50:ff"
+      boot-dev: /dev/sda
+      ip-addr: 10.11.12.232
+    - mac-addr: "00:0c:29:6c:c2:fe"
+      boot-dev: /dev/sda
+      ip-addr: 10.11.12.252
+    - mac-addr: "00:0c:29:1b:5f:bf"
+      boot-dev: /dev/sda
+      ip-addr: 10.11.12.253
+compute-nodes:
+  - metal: true
+    mac-addr: "00:0c:29:03:98:35"
+    boot-dev: /dev/nvme0n1
+    ceph:
+      type: part
+      ceph-dev: nvme0n1p5
+    ip-addr: 10.11.12.228
+  - metal: true
+    mac-addr: "00:0c:29:10:8c:02"
+    boot-dev: /dev/nvme0n1
+    ceph:
+      type: part
+      ceph-dev: nvme0n1p5
+    ip-addr: 10.11.12.234
+  # - metal: true
+  #   mac-addr: "YOUR_HOST_MAC_HERE"
+  #   boot-dev: /dev/nvme0n1
+  #   ceph:
+  #     type: part
+  #     ceph-dev: nvme0n1p5
+  #   ip-addr: 10.11.12.72
