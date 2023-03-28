@@ -99,7 +99,7 @@ function createBootstrapNode() {
 }
 
 function configSno() {
-  BIP=true
+  BIP=false
   metal=$(yq e ".control-plane.metal" ${CLUSTER_CONFIG})
   ip_addr=$(yq e ".control-plane.okd-hosts.[0].ip-addr" ${CLUSTER_CONFIG})
   host_name=${CLUSTER_NAME}-node

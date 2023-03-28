@@ -1,0 +1,110 @@
+
+config dnsmasq
+        option domainneeded '1'
+        option localise_queries '1'
+        option rebind_protection '1'
+        option rebind_localhost '1'
+        option local '/lan/'
+        option expandhosts '1'
+        option authoritative '1'
+        option readethers '1'
+        option leasefile '/tmp/dhcp.leases'
+        option resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+        option localservice '1'
+        option ednspacket_max '1232'
+        option cachelocal '0'
+        option enable_tftp '1'
+        option tftp_root '/data/tftpboot'
+        option localuse '0'
+        option port '0'
+        option dhcp_boot 'undionly.kpxe'
+        option domain 'hitosea.lab'
+
+config dhcp 'lan'
+        option interface 'lan'
+        option dhcpv4 'server'
+        option dhcpv6 'server'
+        option ra 'server'
+        list ra_flags 'managed-config'
+        list ra_flags 'other-config'
+        option leasetime '5m'
+        option start '225'
+        option limit '30'
+        list dhcp_option '6,10.11.12.1'
+
+config dhcp 'wan'
+        option interface 'wan'
+        option ignore '1'
+
+config odhcpd 'odhcpd'
+        option maindhcp '0'
+        option leasefile '/tmp/hosts/odhcpd'
+        option leasetrigger '/usr/sbin/odhcpd-update'
+        option loglevel '4'
+
+config host
+        option name 'okd-bastion'
+        option dns '1'
+        option mac '00:0C:29:56:CB:3A'
+        option ip '10.11.12.102'
+
+config match 'efi64_boot_1'
+        option networkid 'set:efi64'
+        option match '60,PXEClient:Arch:00007'
+
+config match 'efi64_boot_2'
+        option networkid 'set:efi64'
+        option match '60,PXEClient:Arch:00009'
+
+config userclass 'ipxe_boot'
+        option networkid 'set:ipxe'
+        option userclass 'iPXE'
+
+config boot 'uefi'
+        option serveraddress '10.11.12.1'
+        option servername 'pxe'
+        option force '1'
+        option filename 'tag:efi64,tag:!ipxe,ipxe.efi'
+
+config host
+        option name 'okd-bootstrap'
+        option dns '1'
+        option ip '10.11.12.227'
+        option mac '00:0C:29:A1:4B:69'
+        option leasetime '24h'
+
+config host
+        option name 'okd-master3'
+        option dns '1'
+        option mac '00:0c:29:1b:5f:bf'
+        option ip '10.11.12.253'
+
+config host
+        option name 'okd-master2'
+        option dns '1'
+        option mac '00:0c:29:6c:c2:fe'
+        option ip '10.11.12.252'
+
+config host
+        option name 'okd-master1'
+        option dns '1'
+        option mac '00:0c:29:71:50:ff'
+        option ip '10.11.12.232'
+
+config host
+        option name 'okd-worker2'
+        option dns '1'
+        option mac '00:0c:29:03:98:35'
+        option ip '10.11.12.228'
+
+config host
+        option name 'okd-worker1'
+        option dns '1'
+        option mac '00:0c:29:10:8c:02'
+        option ip '10.11.12.234'
+
+config boot
+        option servername 'pxe'
+        option serveraddress '10.11.12.1'
+        option force '1'
+        option filename 'tag:ipxe,boot.ipxe'
