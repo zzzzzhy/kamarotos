@@ -194,10 +194,10 @@ function configControlPlane() {
     createButaneConfig ${ip_addr} ${host_name}.${DOMAIN} ${mac_addr} master ${platform} ${config_ceph} ${boot_dev}
     createPxeFile ${mac_addr} ${platform} ${boot_dev} ${host_name} ${ip_addr}
     # Create control plane node DNS Records:
-    echo "${host_name}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
-    echo "etcd-${node_index}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
+    echo "${host_name}.${CLUSTER_NAME}.${DOMAIN}.   IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
+    echo "etcd-${node_index}.${CLUSTER_NAME}.${DOMAIN}.          IN      A      ${ip_addr} ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/forward.zone
     o4=$(echo ${ip_addr} | cut -d"." -f4)
-    echo "${o4}    IN      PTR     ${host_name}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/reverse.zone
+    echo "${o4}    IN      PTR     ${host_name}.${CLUSTER_NAME}.${DOMAIN}.  ; ${CLUSTER_NAME}-${DOMAIN}-cp" >> ${WORK_DIR}/dns-work-dir/reverse.zone
   done
   # Create DNS SRV Records:
   for node_index in 0 1 2
