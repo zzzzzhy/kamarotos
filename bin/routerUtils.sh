@@ -64,7 +64,7 @@ function initRouter() {
 }
 
 function setupRouter() {
-  ${SSH} root@${router_ip} "opkg update && opkg install curl ip-full procps-ng-ps bind-server bind-tools bash sfdisk rsync resize2fs wget block-mount wipefs coreutils-nohup"
+  ${SSH} root@${router_ip} "opkg update && opkg install haproxy curl ip-full procps-ng-ps bind-server bind-tools bash sfdisk rsync resize2fs wget block-mount wipefs coreutils-nohup"
   createDhcpConfig ${EDGE_ROUTER} ${LAB_DOMAIN}
   createIpxeHostConfig ${EDGE_ROUTER}
   createRouterDnsConfig  ${EDGE_ROUTER} ${LAB_DOMAIN} ${EDGE_ARPA} "edge"
@@ -75,8 +75,7 @@ function setupHaProxy() {
 
   local router_ip=${1}
 
-  ${SSH} root@${router_ip} "opkg update ; \
-    opkg install haproxy"
+  ${SSH} root@${router_ip} "opkg install haproxy"
   ${SSH} root@${router_ip} "mv /etc/haproxy.cfg /etc/haproxy.cfg.orig ; \
     mkdir -p /data/haproxy ; \
     rm -f /etc/init.d/haproxy"
@@ -123,7 +122,7 @@ function setupRouterCommon() {
     uci commit"
   echo "commit" >> ${WORK_DIR}/uci.batch
   ${SCP} ${WORK_DIR}/uci.batch root@${router_ip}:/tmp/uci.batch
-  ${SSH} root@${router_ip} "cat /tmp/uci.batch | uci batch ; reboot"
+  ${SSH} root@${router_ip} "cat /tmp/uci.batch | uci batch ; /etc/init.d/network restart"
 }
 function initEdge() {
 
@@ -151,15 +150,28 @@ function initMicroSD() {
 
   local router_ip=${1}
   local format=${2}
-  ${SSH} root@${router_ip} "mkdir -p /root/bin ; \
-      mkfs.ext4 /dev/sdb ; \
+  ${SSH} root@${router_ip} "echo \"mounting /usr/local filesystem\" ; \
+    let RC=0 ; \
+    while [[ \${RC} -eq 0 ]] ; \
+    do uci delete fstab.@mount[-1] ; \
+    let RC=\$? ; \
+    done; \
+    PART_UUID=\$(block info /dev/sdb | cut -d\\\" -f2) ; \
+    MOUNT=\$(uci add fstab mount) ; \
+    uci set fstab.\${MOUNT}.target=/usr/local ; \
+    uci set fstab.\${MOUNT}.uuid=\${PART_UUID} ; \
+    uci set fstab.\${MOUNT}.enabled=1 ; \
+    uci commit fstab ; \
+    block mount ; \
+    ln -s /usr/local /data ; \
+    ln -s /usr/local/www/install /www/install ; \
+    mkdir -p /root/bin"
+  ${SSH} root@${router_ip} "mkfs.ext4 /dev/sdb ; \
       mkdir /usr/local;\
       mount /dev/sdb /usr/local ; \
       mkdir -p /usr/local/www/install/kickstart ; \
       mkdir /usr/local/www/install/postinstall ; \
       mkdir /usr/local/www/install/fcos ; \
-      ln -s /usr/local /data ;\
-      ln -s /usr/local/www/install /www/install;\
       for i in BaseOS AppStream ; \
         do mkdir -p /usr/local/www/install/repos/\${i}/x86_64/os/ ; \
       done ;\
