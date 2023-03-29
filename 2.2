@@ -1,0 +1,60 @@
+{
+    "ignition": {
+        "config": {
+            "merge": [
+                {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/3RVwW7jOhL8F5/fm6EkKxjnYQ4jh5QtW9SQYpMSF3ugRU0ki7IVm7EdD/Lvi+TtAruHvTS6UeiqS6Hq96x/PvS+Px5mj79nzfHwq3/+2Mb29NzOHv/xe3Y+vp6advY467yfzo9fv5qp/7M/+C/Hwc7/Hl3vj+fWfHFm9xiGD2H09W+ir6M5+/Y0e//n+x+zc9u8nnr/9sHu3flTrj35/lffGN/+ePXd8dT7vj3/r6o13jz69ua/Ts70h7+azpzOrf/+6n/9+e2vnTm3D/M/tiXy2zJYcrCZ6JMnLjMoQWcMEeCfGPLLIchK4IRj+sSUnjQiUQlZopHLaiC0Vp0AVceFohEnRJeDv6jBHe1ICyYJETjjrLIbM0ghIEs4wjcJsGFRR8txfWfjrd8N8aWW1uQ4KFllsQ4clo5wjmWkV67P98NVEFsYHCwp6bDE7kEApy0sgAlS8NTHQt0u6seEJQ7+jcUv/41ZNL1wSSkbyIoJIjnQuYCpz1F2rse42IWkUvuEwkAinlrNieYAnNiQx8tx/VaIJJcoPgpwGRvcC4N4qUN/M6mf+N1FOc4SAJkyID8ZIrzAhJbgliy024+bA4ntnc7FgQ8gaSwQ3hTY7QspoXF63B3oG8Us2iK6ykV+U+CZOWRmh5pgRzpnnQ6NI0sjur6886F5+3bdpdm+QR1Vlb3YkLht5M70Ol2knAyk/gIHnXMpcYO6o3zzeSMhVFVXqtELOjqZDzLeBEdEV9S3qUvEISNGeZcj31uZrOoDu7QVX9IKz5eHLq2rZCpgGlUaZGKch2Xg9gY40ZLIZpj6HY7jAoaYDX6uZPfSvC24ruyxCdZIqHjLIw477O91pJd5it+KVb4Rbn2jaDoCwqG+U2NCHJnQQ3lnp12IAwVT2ay6u3TdehPGT6Wj23LwSd77nzZ1NQ06WpCukvL5Vg8029473rDjPY+aE4SLXMHzyaRToQQtGbpNEsO17BedQVxYIHUd2ocaTVdKkoddNFwk8nIX6bMRmjJRI6so7FS3bxXZLgf+ZoIfQY4n0wQk45hwBtklxy4C4IlA2UE4vQbRLZmq5xyyRABNGkkivvr0VJkTngA8X9hApEUk4rDebKMp0fg/v5zw0XKpFgTCRa/Gad0Q91OGeZBXedgK96px5oqn7FJWFoN0mzJcmFJ1YY3iDw/mzJGE/5gOGsklA3yvR+1oMN13pd+0Um7EnmYA56scp5ztbdqEi30ZJeWu9LSuumWb1kiL5wsLcNCkXWwQTQu1eLJ7vV7u12GOHdNP3NDIpZQMJ7GnLyKwWgMvGOC5HUlSQn1rqmlsiXw1EfGs4lkjp1DiLoF+UYnKDi2WPQeI7WrYmCoTPCK8Dn4gjXBUwE0ymdwUvh1pNK3sXb/qVVbkWBZ8lV1zadc5WccFJhebfgv4nlyF6KDAMjHIhyzQyl6PiN+Tuw1sYVzyIvAiKtLbyIHN7cF2eul9K7s9IP2aBxZK5OIymq5MZcBlfhH7+k04FuwgDkDyMHdkr0QyLvd1bF0nxBBUH3lUKH3n6PnKghpZ4Gf15KTC8lgqFJp+8WBgfZL3/GQwr8yosapksUFNxAb9swXiWzKd2HDesKF70ljO+Tgp2CfHdnAnHugnkWZOrzKnpD78ZMfPXN6CLPjy/2T28/fvH+3x/sfs0p7Ony01i76EX9Ds/f1fAQAA//8E4XGpuwYAAA=="
+                }
+            ]
+        },
+        "version": "3.3.0"
+    },
+    "storage": {
+        "files": [
+            {
+                "path": "/etc/zincati/config.d/90-disable-feature.toml",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,%5Bupdates%5D%0Aenabled%20%3D%20false%0A"
+                },
+                "mode": 420
+            },
+            {
+                "path": "/etc/systemd/network/25-nic0.link",
+                "contents": {
+                    "compression": "",
+                    "source": "data:;base64,W01hdGNoXQpNQUNBZGRyZXNzPTAwOjBjOjI5OjFiOjVmOmJmCltMaW5rXQpOYW1lPW5pYzAK"
+                },
+                "mode": 420
+            },
+            {
+                "overwrite": true,
+                "path": "/etc/NetworkManager/system-connections/nic0.nmconnection",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/1yKTa7CIBCA93OX8oDXLiThJE0XU5gKsQwNjJre3o3GxOX3M4fKTEFy5QXkPMiTJGpMApmF2oaBBsZCnnPQAPMnL1AwDBhjo9691k4HZy/OrG7a3LoBzPl4jAsUklSjL8h33OH9U/dGK2OUscpO/392hCsKPfH8egOR+w8OnbCF5OstjiplqZ1Q7bjCKwAA//9Ha1/gxwAAAA=="
+                },
+                "mode": 384
+            },
+            {
+                "overwrite": true,
+                "path": "/etc/hostname",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,okd4-master-2.okd4.hitosea.lab%0A"
+                },
+                "mode": 272
+            },
+            {
+                "overwrite": true,
+                "path": "/etc/chrony.conf",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,pool%2010.11.12.1%20iburst%20%0Adriftfile%20%2Fvar%2Flib%2Fchrony%2Fdrift%0Amakestep%201.0%203%0Artcsync%0Alogdir%20%2Fvar%2Flog%2Fchrony%0A"
+                },
+                "mode": 420
+            }
+        ]
+    }
+}

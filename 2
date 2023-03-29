@@ -1,0 +1,78 @@
+{
+    "ignition": {
+        "config": {
+            "merge": [
+                {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/3RVwW7jOhK872f4PG9CSVYwzsMcIoeULVtUSLEpiYs90KImkkVZis3Yjgf590XydoHdw7s0ulHoqkuh6vesezl0rhsPs4ffs3o8/OpePrehOb40s4d//p6dxrdj3cweZq1z0+nh7k5P3R/dwX0fezP/a7SdG0+N/m717sH37/3g7i+iu8t47Jvj7ONfH99mp6Z+O3bu/ZPd2dOXXHN03a+u1q55fHPteOxc15z+X9Vopx9cc3V3k9Xd4c+61cdT436+uV9//Phzp0/N/fzbNkdum3tLDiYRXfTEZQI5qIQhAvwLQ27Ze0kOnHBMn1ihJoVIkEMSKWSTCgitilZAUYVZQQNOiMp7dy56O5qBZkwSInDCWWk2updCQBJxhK8SYMOClubD+saGa7frw3MljU6xl7PSYOVZLC3hHMtArWyX7vuLICbT2FtS0mKJ7b0AThtYABMk47ELRXE9F48Tltj7Dxa+/i9m0PTKJaWsJysmiORA5wKmLkXJqRrCbOeTsthHFHoS8NgoThQH4MT4PFwO6/dMRKlE4SjAJqy3rwzCpfLdVcdu4jcbpDiJAGTMgDwzRHiGCc3BLplvtp83BxKaG52LA+9B0lAgvMmw3WdSQm3VsDvQd4pZsEV0lYr0WoBj+pDoHaq9HWmtscrXliy1aLv8xvv6/cdlFyf7GrW0KM3Z+MRuA3uil+ks5aQhdmc4qJRLiWvUjvLdpbUEvyjbvBicoIOVaS/DjTciuqKuiW0kDgnRhbMpcp2R0ao6sHNT8iUt8Xx5aOOqjKYMpqGIvUQMcz/37F4DJ0oSWfdTt8NhmEEfst7NC9m+1u8Lrkoz1t4aiSLc8oDDDrtbFahlGuP3bJVuhF1fKZpGQNhXN6q1jwPtO8hv7LjzsVfAlNer9iZtu9744VNu6TbvXZR27tnEtqJeSzPSllK+XKueJttby2s23tKgPoK/SAt4Oep4ygpBc4auk8RwybtFqxEXBkhV+ea+QtOFkuh+F/RniZzcBeqkhaJMVMgUFHZFu28Ksl32/F17j16KJ117JOGYcAbJOcU2AOCRQMlBWLUG0S5ZUc05JJEAGtWSBHz15ak8JTwCeDmznkiDSMBhvdkGU6Twf3854YPhslgQ8BddMUzrmthn6adeWqZ+I+ybwonNnpJzXhoM0m5yf6HzovUrFH56MGWWRPxxOigklwzwrRqUpd502+Vu00i5EXuaAJwucphStjdx7S/2eRDlu9zRqmyXTVwhJV7OzMNeHbehRjTOisWT2av1cr/2U2yZeuKaBjampD+KPX0VnlEKeMYAz81Aohyqa11OQ0Pkmw6IYyVPajn5ErcRdItSlKZvsOw4QGhW/UaXieAB4ZX3iBTCQQZXyWR0LfB1pMG0Mjf1plZJlmKZ8VVySaVZp2QdZpicTfzD43tyEaKFDMtII+czTxXmMiJ+i27GM5m20avAiyCLrwMHNjcH06qlc41s94DUW+oZyJEN82C6sCIBLtOz2FfvwjJvB6EHkvupJftCRMNyX4XGtkL0XvmZR1mhbhy9XJhXIQP8VDxZWWA55gXydbe417A+ylt61JiXelC4KGW2QXXAevXcAHENmY6sP21Y3z4pLOd8mArYR2PT2yP31JOIE6tWiS2kOjyz8SuXtyAzvvybzH75+fOzPT6+zc7N8fTVUrPgu/8dzT4+/vHvAAAA//+FFzezvAYAAA=="
+                }
+            ]
+        },
+        "version": "3.3.0"
+    },
+    "storage": {
+        "disks": [
+            {
+                "device": "/dev/sda",
+                "partitions": [
+                    {
+                        "label": "root",
+                        "number": 4,
+                        "resize": true,
+                        "sizeMiB": 102400
+                    },
+                    {
+                        "number": 5,
+                        "sizeMiB": 0
+                    }
+                ],
+                "wipeTable": false
+            }
+        ],
+        "files": [
+            {
+                "path": "/etc/zincati/config.d/90-disable-feature.toml",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,%5Bupdates%5D%0Aenabled%20%3D%20false%0A"
+                },
+                "mode": 420
+            },
+            {
+                "path": "/etc/systemd/network/25-nic0.link",
+                "contents": {
+                    "compression": "",
+                    "source": "data:;base64,W01hdGNoXQpNQUNBZGRyZXNzPTAwOjBjOjI5OjAzOjk4OjM1CltMaW5rXQpOYW1lPW5pYzAK"
+                },
+                "mode": 420
+            },
+            {
+                "overwrite": true,
+                "path": "/etc/NetworkManager/system-connections/nic0.nmconnection",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/1yKzYrDIBCA7/MucdVkIRF8kpDDrM5WaRyDTlvy9r20FHr8ftZQmSlIrryBnAd5kkSNSSCzUPvHQANjIc85aID1nTcoGAaMsVHvXmung7OL06NbZjf+Aqz5uE8bFJJUoy/IN9zh9VP3RitjlLHK2vnHTnBBoQeeH28gcv/CoRO2kHy9xkmlLLUTqh3/4BkAAP//dC0KaMcAAAA="
+                },
+                "mode": 384
+            },
+            {
+                "overwrite": true,
+                "path": "/etc/hostname",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,okd4-worker-0.okd4.hitosea.lab%0A"
+                },
+                "mode": 272
+            },
+            {
+                "overwrite": true,
+                "path": "/etc/chrony.conf",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,pool%2010.11.12.1%20iburst%20%0Adriftfile%20%2Fvar%2Flib%2Fchrony%2Fdrift%0Amakestep%201.0%203%0Artcsync%0Alogdir%20%2Fvar%2Flog%2Fchrony%0A"
+                },
+                "mode": 420
+            }
+        ]
+    }
+}

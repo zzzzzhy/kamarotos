@@ -153,7 +153,8 @@ function pullSecret() {
   fi
   if [[ ${NO_LAB_PI} == "true" ]]
   then
-    echo -n '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfMmJhNDgxYTNlMjYzNDNiZmEyYzBjYzNmMTA1ZjY3ZGY6V1VOTjg1NDkwRFdKSE84WUgxNzFDQk9XMElaSlNEOEtBSzJVNlNKQkJSVThGVFlZT09JVVVJODc1WDdOMlFJUw==","email":"maleedingda@gmail.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfMmJhNDgxYTNlMjYzNDNiZmEyYzBjYzNmMTA1ZjY3ZGY6V1VOTjg1NDkwRFdKSE84WUgxNzFDQk9XMElaSlNEOEtBSzJVNlNKQkJSVThGVFlZT09JVVVJODc1WDdOMlFJUw==","email":"maleedingda@gmail.com"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWQ1NjAyZWJiLTIzOGYtNGNhMS04NjU4LTRiMGEzY2ZmZjZhNTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXlNelZqWVRJMlkySmxOV1EwTWpnMFlqQXpZMk01WldJNVpqQTFNamczWWlKOS5xeUZIX0t6b094R1Q5VV9jdlhOek54ZUQxTDFsNGdKSElaN1QtSUNYYXozUzZqSmFkWVlXWUxqTjFZQm1xSUZ3WVEyTTZ3SGhHZEVFZ0JnQmFZNnk2NzJNT1o1YnFOdEFuTHBGTkFkUTlRWUpHSWhUZXFWWTVObkp1YTBRMEJiM0dDX2JxRDdFcUVQaVVaQXFOYTJWVU5FUGFJdVZvSWtncEF1VUJjdzh1VVE2MGJnd3hlS1l0WGl4dGVoczI2dEtDTmQySGw0NExwQ2lLWEVFRVVOekNfbTluVHZnQ3NnajBRSUNRTmxhTHM0Z2FQVU1zWGtBVWwwQmRYSEh4QUtxSzZUTmdzeFp0cUhqcC10NVVNcWVMblZFSy01Y1FVY3hpWDVBUkljczAzNFJybmh0X0JLNnJ0anQwVjVWcVduaEZ4WFI3d09GREprMFlZYllBb0tqSzlzZUgtUUdILXlrREd1bnZ2TmM0bVNFWXlnTVhhNVFQU2hZdVdzMjJaYkFqUTJ0RDV3bWxybjhkeVFwcXA1V1oxTWs3MGRRbW5Gc0pmbHQwSGFYZENoQnhTT3AtUFh5QUlmcmpoaTZlbEpRVE52YllHZkJvcGNHSHVQUmhoaW9SendUU1o2cUhCUDRBMjlKZzFnbUlZcS04aDhFVFk0UTJOVGFWVlplZDdWNE5CVHh3azYzTWl2NWpwNmxVQWhvZDhNWGlIcHpxeldDSUNJSzg4cmgwb3ZFSnVoX1B5dUxXWHBHamFaSzM4ckhRUmRVYlpCcjA2VXV0ZWNKTF9NSTVYNTRsekFkNmpNSWFnOGlrSDR6NHlCUmxhNDd3YzJZTWt4dVVyZ0x4OFVWcEVNU1gtUVNHemtWbmpnWkhObkQ1NTBLeE8zekVScFJuQ2VYeEE1a0h2UQ==","email":"maleedingda@gmail.com"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWQ1NjAyZWJiLTIzOGYtNGNhMS04NjU4LTRiMGEzY2ZmZjZhNTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXlNelZqWVRJMlkySmxOV1EwTWpnMFlqQXpZMk01WldJNVpqQTFNamczWWlKOS5xeUZIX0t6b094R1Q5VV9jdlhOek54ZUQxTDFsNGdKSElaN1QtSUNYYXozUzZqSmFkWVlXWUxqTjFZQm1xSUZ3WVEyTTZ3SGhHZEVFZ0JnQmFZNnk2NzJNT1o1YnFOdEFuTHBGTkFkUTlRWUpHSWhUZXFWWTVObkp1YTBRMEJiM0dDX2JxRDdFcUVQaVVaQXFOYTJWVU5FUGFJdVZvSWtncEF1VUJjdzh1VVE2MGJnd3hlS1l0WGl4dGVoczI2dEtDTmQySGw0NExwQ2lLWEVFRVVOekNfbTluVHZnQ3NnajBRSUNRTmxhTHM0Z2FQVU1zWGtBVWwwQmRYSEh4QUtxSzZUTmdzeFp0cUhqcC10NVVNcWVMblZFSy01Y1FVY3hpWDVBUkljczAzNFJybmh0X0JLNnJ0anQwVjVWcVduaEZ4WFI3d09GREprMFlZYllBb0tqSzlzZUgtUUdILXlrREd1bnZ2TmM0bVNFWXlnTVhhNVFQU2hZdVdzMjJaYkFqUTJ0RDV3bWxybjhkeVFwcXA1V1oxTWs3MGRRbW5Gc0pmbHQwSGFYZENoQnhTT3AtUFh5QUlmcmpoaTZlbEpRVE52YllHZkJvcGNHSHVQUmhoaW9SendUU1o2cUhCUDRBMjlKZzFnbUlZcS04aDhFVFk0UTJOVGFWVlplZDdWNE5CVHh3azYzTWl2NWpwNmxVQWhvZDhNWGlIcHpxeldDSUNJSzg4cmgwb3ZFSnVoX1B5dUxXWHBHamFaSzM4ckhRUmRVYlpCcjA2VXV0ZWNKTF9NSTVYNTRsekFkNmpNSWFnOGlrSDR6NHlCUmxhNDd3YzJZTWt4dVVyZ0x4OFVWcEVNU1gtUVNHemtWbmpnWkhObkQ1NTBLeE8zekVScFJuQ2VYeEE1a0h2UQ==","email":"maleedingda@gmail.com"}}}' > ${PULL_SECRET}
+    secret=$(yq e ".pullsecret" ${LAB_CONFIG_FILE})
+    echo -n $secret > ${PULL_SECRET}
   else
     createPullSecret
   fi
@@ -312,9 +313,10 @@ function ocConsole() {
 
 function configInfraNodes() {
   
-  for node_index in 0 1 2
+  let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+  for((i=0;i<${node_count};i++))
   do
-    ${OC} label nodes ${CLUSTER_NAME}-master-${node_index}.${DOMAIN} node-role.kubernetes.io/infra=""
+    ${OC} label nodes ${CLUSTER_NAME}-master-${i}.${DOMAIN} node-role.kubernetes.io/infra=""
   done
   ${OC} patch scheduler cluster --patch '{"spec":{"mastersSchedulable":false}}' --type=merge
   ${OC} patch -n openshift-ingress-operator ingresscontroller default --patch '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}},"tolerations":[{"key":"node.kubernetes.io/unschedulable","effect":"NoSchedule"},{"key":"node-role.kubernetes.io/master","effect":"NoSchedule"}]}}}' --type=merge
@@ -457,14 +459,15 @@ function startControlPlane() {
     host_name=$(yq e ".control-plane.okd-hosts.[0].name" ${CLUSTER_CONFIG})
     startNode ${kvm_host}.${DOMAIN} ${host_name}
   else
-    for node_index in 0 1 2
+    let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+    for((i=0;i<${node_count};i++))
     do
-      if [[ ${node_index} -gt 0 ]]
+      if [[ ${i} -gt 0 ]]
       then
         pause 30 "Pause to stagger node start up"
       fi
-      kvm_host=$(yq e ".control-plane.okd-hosts.[${node_index}].kvm-host" ${CLUSTER_CONFIG})
-      host_name=$(yq e ".control-plane.okd-hosts.[${node_index}].name" ${CLUSTER_CONFIG})
+      kvm_host=$(yq e ".control-plane.okd-hosts.[${i}].kvm-host" ${CLUSTER_CONFIG})
+      host_name=$(yq e ".control-plane.okd-hosts.[${i}].name" ${CLUSTER_CONFIG})
       startNode ${kvm_host}.${DOMAIN} ${host_name}
     done
   fi
@@ -620,13 +623,14 @@ function createCephCluster() {
 }
 
 function createControlPlaneCephCluster() {
-  for node_index in 0 1 2
+  let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+  for((i=0;i<${node_count};i++))
   do
-    node_name=$(yq e ".control-plane.okd-hosts.[${node_index}].name" ${CLUSTER_CONFIG}).${DOMAIN}
+    node_name=$(yq e ".control-plane.okd-hosts.[${i}].name" ${CLUSTER_CONFIG}).${DOMAIN}
     ceph_dev=$(yq e ".control-plane.ceph.ceph-dev" ${CLUSTER_CONFIG})
-    yq e ".spec.storage.nodes.[${node_index}].name = \"${node_name}\"" -i ${CEPH_CLUSTER_FILE}
-    yq e ".spec.storage.nodes.[${node_index}].devices.[0].name = \"${ceph_dev}\"" -i ${CEPH_CLUSTER_FILE}
-    yq e ".spec.storage.nodes.[${node_index}].devices.[0].config.osdsPerDevice = \"1\"" -i ${CEPH_CLUSTER_FILE}
+    yq e ".spec.storage.nodes.[${i}].name = \"${node_name}\"" -i ${CEPH_CLUSTER_FILE}
+    yq e ".spec.storage.nodes.[${i}].devices.[0].name = \"${ceph_dev}\"" -i ${CEPH_CLUSTER_FILE}
+    yq e ".spec.storage.nodes.[${i}].devices.[0].config.osdsPerDevice = \"1\"" -i ${CEPH_CLUSTER_FILE}
     ${SSH} -o ConnectTimeout=5 core@${node_name} "sudo wipefs -a -f /dev/${ceph_dev} && sudo dd if=/dev/zero of=/dev/${ceph_dev} bs=4096 count=100"
     ${OC} label nodes ${node_name} role=storage-node
   done

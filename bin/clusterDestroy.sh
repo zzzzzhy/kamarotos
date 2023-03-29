@@ -24,16 +24,17 @@ function deleteControlPlane() {
     fi
     deletePxeConfig ${mac_addr}
   else
-    for node_index in 0 1 2
+    let node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+    for((i=0;i<${node_count};i++))
     do
-      mac_addr=$(yq e ".control-plane.okd-hosts.[${node_index}].mac-addr" ${CLUSTER_CONFIG})
-      host_name=$(yq e ".control-plane.okd-hosts.[${node_index}].name" ${CLUSTER_CONFIG})
+      mac_addr=$(yq e ".control-plane.okd-hosts.[${i}].mac-addr" ${CLUSTER_CONFIG})
+      host_name=$(yq e ".control-plane.okd-hosts.[${i}].name" ${CLUSTER_CONFIG})
       if [[ ${metal} == "true" ]]
       then
-        boot_dev=$(yq e ".control-plane.okd-hosts.[${node_index}].boot-dev" ${CLUSTER_CONFIG})
+        boot_dev=$(yq e ".control-plane.okd-hosts.[${i}].boot-dev" ${CLUSTER_CONFIG})
         destroyMetal core ${host_name} ${boot_dev} na ${p_cmd}
       else
-        kvm_host=$(yq e ".control-plane.okd-hosts.[${node_index}].kvm-host" ${CLUSTER_CONFIG})
+        kvm_host=$(yq e ".control-plane.okd-hosts.[${i}].kvm-host" ${CLUSTER_CONFIG})
         deleteNodeVm ${host_name} ${kvm_host}.${DOMAIN}
       fi
       deletePxeConfig ${mac_addr}

@@ -14,7 +14,6 @@ bootstrap:
   #   cpu: 4
   #   root-vol: 50
   mac-addr: "00:0c:29:a1:4b:69"
-  kvm-host: dev-host
   boot-dev: /dev/sda
   # kvm-domain: my.multi-region.lab
   ip-addr: 10.11.12.227
@@ -33,17 +32,17 @@ control-plane:
 compute-nodes:
   - metal: true
     mac-addr: "00:0c:29:03:98:35"
-    boot-dev: /dev/nvme0n1
-    ceph:
-      type: part
-      ceph-dev: nvme0n1p5
+    boot-dev: /dev/sda
+    # ceph:
+    #   type: part
+    #   ceph-dev: nvme0n1p5
     ip-addr: 10.11.12.228
   - metal: true
     mac-addr: "00:0c:29:10:8c:02"
-    boot-dev: /dev/nvme0n1
-    ceph:
-      type: part
-      ceph-dev: nvme0n1p5
+    boot-dev: /dev/sda
+    # ceph:
+    #   type: part
+    #   ceph-dev: nvme0n1p5
     ip-addr: 10.11.12.234
   # - metal: true
   #   mac-addr: "YOUR_HOST_MAC_HERE"
