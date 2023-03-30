@@ -256,7 +256,7 @@ function deployCluster() {
 
 function deployWorkers() {
   WORK_DIR=${OKD_LAB_PATH}/${CLUSTER_NAME}.${DOMAIN}
-  rm -rf ${WORK_DIR}
+  # rm -rf ${WORK_DIR}
   mkdir -p ${WORK_DIR}/ipxe-work-dir/ignition
   mkdir -p ${WORK_DIR}/dns-work-dir
   

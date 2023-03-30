@@ -65,6 +65,7 @@ function initRouter() {
 
 function setupRouter() {
   ${SSH} root@${router_ip} "opkg update && opkg install haproxy curl ip-full procps-ng-ps bind-server bind-tools bash sfdisk rsync resize2fs wget block-mount wipefs coreutils-nohup"
+  ${SSH} root@${router_ip}  "ubus call uci delete '{\"config\":\"dhcp\",\"type\":\"host\"}' ; uci commit dhcp"
   createDhcpConfig ${EDGE_ROUTER} ${LAB_DOMAIN}
   createIpxeHostConfig ${EDGE_ROUTER}
   createRouterDnsConfig  ${EDGE_ROUTER} ${LAB_DOMAIN} ${EDGE_ARPA} "edge"

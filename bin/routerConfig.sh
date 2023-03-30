@@ -1,17 +1,14 @@
-
-
 function createRouterDnsConfig() {
 
-local router_ip=${1}
-local net_domain=${2}
-local arpa=${3}
-local type=${4}
-local forwarders=""
+  local router_ip=${1}
+  local net_domain=${2}
+  local arpa=${3}
+  local type=${4}
+  local forwarders=""
 
-if [[ ${type} == "domain" ]]
-then
+  if [[ ${type} == "domain" ]]; then
 
-cat << EOF > ${WORK_DIR}/edge-zone
+    cat <<EOF >${WORK_DIR}/edge-zone
 zone "${net_domain}" {
     type stub;
     masters { ${router_ip}; };
@@ -20,9 +17,9 @@ zone "${net_domain}" {
 
 EOF
 
-forwarders="forwarders { ${EDGE_ROUTER}; };"
+    forwarders="forwarders { ${EDGE_ROUTER}; };"
 
-cat << EOF > ${WORK_DIR}/dns/named.conf
+    cat <<EOF >${WORK_DIR}/dns/named.conf
 acl "trusted" {
  ${DOMAIN_NETWORK}/${DOMAIN_CIDR};
  ${EDGE_NETWORK}/${EDGE_CIDR};
@@ -30,18 +27,18 @@ acl "trusted" {
 };
 EOF
 
-else
+  else
 
-cat << EOF > ${WORK_DIR}/dns/named.conf
+    cat <<EOF >${WORK_DIR}/dns/named.conf
 acl "trusted" {
  ${EDGE_NETWORK}/${EDGE_CIDR};
  127.0.0.1;
 };
 EOF
 
-fi
+  fi
 
-cat << EOF >> ${WORK_DIR}/dns/named.conf
+  cat <<EOF >>${WORK_DIR}/dns/named.conf
 options {
  listen-on port 53 { 127.0.0.1; ${router_ip}; };
  
@@ -106,7 +103,7 @@ zone "255.in-addr.arpa" {
 
 EOF
 
-cat << EOF > ${WORK_DIR}/dns/db.${net_domain}
+  cat <<EOF >${WORK_DIR}/dns/db.${net_domain}
 @       IN      SOA     router.${net_domain}. admin.${net_domain}. (
              3          ; Serial
              604800     ; Refresh
@@ -121,7 +118,7 @@ cat << EOF > ${WORK_DIR}/dns/db.${net_domain}
 router.${net_domain}.         IN      A      ${router_ip}
 EOF
 
-cat << EOF > ${WORK_DIR}/dns/db.${arpa}
+  cat <<EOF >${WORK_DIR}/dns/db.${arpa}
 @       IN      SOA     router.${net_domain}. admin.${net_domain}. (
                             3         ; Serial
                         604800         ; Refresh
@@ -139,10 +136,33 @@ EOF
 
 function createDhcpConfig() {
 
-local router_ip=${1}
-local domain=${2}
-
-cat << EOF >> ${WORK_DIR}/uci.batch
+  local router_ip=${1}
+  local domain=${2}
+  local bootstrap_ip=$(yq e ".bootstrap.ip-addr" ${CLUSTER_CONFIG})
+  local bootstrap_mac=$(yq e ".bootstrap.mac-addr" ${CLUSTER_CONFIG})
+  local node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+  for ((i = 0; i < ${node_count}; i++)); do
+    ip_addr=$(yq e ".control-plane.okd-hosts.[${i}].ip-addr" ${CLUSTER_CONFIG})
+    mac_addr=$(yq e ".control-plane.okd-hosts.[${i}].mac-addr" ${CLUSTER_CONFIG})
+    cat <<EOB >>${WORK_DIR}/uci.batch
+set dhcp.master${i}=host
+set dhcp.master${i}.name=${CLUSTER_NAME}-master-${i}
+set dhcp.master${i}.ip=$ip_addr
+set dhcp.master${i}.mac=$mac_addr
+EOB
+  done
+  node_count=$(yq e ".compute-nodes.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+  for ((i = 0; i < ${node_count}; i++)); do
+    ip_addr=$(yq e ".compute-nodes.[${i}].ip-addr" ${CLUSTER_CONFIG})
+    mac_addr=$(yq e ".compute-nodes.[${i}].mac-addr" ${CLUSTER_CONFIG})
+    cat <<EOB >>${WORK_DIR}/uci.batch
+set dhcp.worker${i}=host
+set dhcp.worker${i}.name=${CLUSTER_NAME}-worker-${i}
+set dhcp.worker${i}.ip=$ip_addr
+set dhcp.worker${i}.mac=$mac_addr
+EOB
+  done
+  cat <<EOF >>${WORK_DIR}/uci.batch
 set dhcp.@dnsmasq[0].domain=${domain}
 set dhcp.@dnsmasq[0].localuse=0
 set dhcp.@dnsmasq[0].cachelocal=0
@@ -151,6 +171,10 @@ set dhcp.lan.leasetime="5m"
 set dhcp.lan.start="225"
 set dhcp.lan.limit="30"
 add_list dhcp.lan.dhcp_option="6,${EDGE_ROUTER}"
+set dhcp.bootstrap=host
+set dhcp.bootstrap.ip=$bootstrap_ip
+set dhcp.bootstrap.mac=$bootstrap_mac
+set dhcp.bootstrap.name=${CLUSTER_NAME}-bootstrap
 EOF
 }
 
@@ -158,7 +182,7 @@ function createIpxeHostConfig() {
 
   local router_ip=${1}
 
-cat << EOF >> ${WORK_DIR}/uci.batch
+  cat <<EOF >>${WORK_DIR}/uci.batch
 del_list uhttpd.main.listen_http="[::]:80"
 del_list uhttpd.main.listen_http="0.0.0.0:80"
 del_list uhttpd.main.listen_https="[::]:443"
@@ -171,9 +195,9 @@ set uhttpd.main.home='/www'
 set uhttpd.main.redirect_https='0'
 EOF
 
-CENTOS_MIRROR=$(yq e ".centos-mirror" ${LAB_CONFIG_FILE})
+  CENTOS_MIRROR=$(yq e ".centos-mirror" ${LAB_CONFIG_FILE})
 
-cat << EOF > ${WORK_DIR}/MirrorSync.sh
+  cat <<EOF >${WORK_DIR}/MirrorSync.sh
 #!/bin/bash
 
 echo "Starting Repo Synch for CentOS Stream" > /usr/local/MirrorSync.log
@@ -193,7 +217,7 @@ done
 echo "Completed Repo Synch for CentOS Stream" >> /usr/local/MirrorSync.log
 EOF
 
-cat << EOF > ${WORK_DIR}/local-repos.repo
+  cat <<EOF >${WORK_DIR}/local-repos.repo
 [local-appstream]
 name=AppStream
 baseurl=http://${BASTION_HOST}/install/repos/AppStream/x86_64/os/
@@ -208,7 +232,7 @@ enabled=1
 
 EOF
 
-cat << EOF > ${WORK_DIR}/chrony.conf
+  cat <<EOF >${WORK_DIR}/chrony.conf
 server ${BASTION_HOST} iburst
 driftfile /var/lib/chrony/drift
 makestep 1.0 3
@@ -216,7 +240,7 @@ rtcsync
 logdir /var/log/chrony
 EOF
 
-cat << EOF > ${WORK_DIR}/boot.ipxe
+  cat <<EOF >${WORK_DIR}/boot.ipxe
 #!ipxe
    
 echo ========================================================
@@ -239,7 +263,7 @@ echo ========================================================
 chain --replace --autofree ipxe/\${mac:hexhyp}.ipxe
 EOF
 
-cat << EOF >> ${WORK_DIR}/uci.batch
+  cat <<EOF >>${WORK_DIR}/uci.batch
 add_list dhcp.lan.dhcp_option="6,${router_ip}"
 set dhcp.lan.leasetime="5m"
 set dhcp.@dnsmasq[0].enable_tftp=1
@@ -282,8 +306,21 @@ function configHaProxy() {
   local cp_1=$(yq e ".control-plane.okd-hosts.[1].ip-addr" ${CLUSTER_CONFIG})
   local cp_2=$(yq e ".control-plane.okd-hosts.[2].ip-addr" ${CLUSTER_CONFIG})
   local bs=$(yq e ".bootstrap.ip-addr" ${CLUSTER_CONFIG})
+  local node_count=$(yq e ".control-plane.okd-hosts" ${CLUSTER_CONFIG} | yq e 'length' -)
+  rm -f /tmp/cp_*
+  for ((i = 0; i < ${node_count}; i++)); do
+    ip_addr=$(yq e ".control-plane.okd-hosts.[${i}].ip-addr" ${CLUSTER_CONFIG})
+    echo "    server okd4-master-${i} ${ip_addr}:6443 check weight 1" >>/tmp/cp_6443
+    echo "    server okd4-master-${i} ${ip_addr}:22623 check weight 1" >>/tmp/cp_22623
+    echo "    server okd4-master-${i} ${ip_addr}:80 check weight 1" >>/tmp/cp_80
+    echo "    server okd4-master-${i} ${ip_addr}:443 check weight 1" >>/tmp/cp_443
+  done
+  local cp_6443=$(cat /tmp/cp_6443)
+  local cp_22623=$(cat /tmp/cp_22623)
+  local cp_80=$(cat /tmp/cp_80)
+  local cp_443=$(cat /tmp/cp_443)
 
-cat << EOF > ${WORK_DIR}/haproxy-${CLUSTER_NAME}.init
+  cat <<EOF >${WORK_DIR}/haproxy-${CLUSTER_NAME}.init
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2009-2010 OpenWrt.org
 
@@ -315,7 +352,7 @@ check() {
 }
 EOF
 
-cat << EOF > ${WORK_DIR}/haproxy-${CLUSTER_NAME}.cfg
+  cat <<EOF >${WORK_DIR}/haproxy-${CLUSTER_NAME}.cfg
 global
 
     log         127.0.0.1 local2
@@ -352,9 +389,7 @@ listen okd4-api
     option tcpka
     option tcp-check
     server okd4-bootstrap ${bs}:6443 check weight 1
-    server okd4-master-0 ${cp_0}:6443 check weight 1
-    server okd4-master-1 ${cp_1}:6443 check weight 1
-    server okd4-master-2 ${cp_2}:6443 check weight 1
+${cp_6443}
 
 listen okd4-mc 
     bind ${lb_ip}:22623
@@ -363,9 +398,7 @@ listen okd4-mc
     mode tcp
     option tcpka
     server okd4-bootstrap ${bs}:22623 check weight 1
-    server okd4-master-0 ${cp_0}:22623 check weight 1
-    server okd4-master-1 ${cp_1}:22623 check weight 1
-    server okd4-master-2 ${cp_2}:22623 check weight 1
+${cp_22623}
 
 listen okd4-apps 
     bind ${lb_ip}:80
@@ -373,9 +406,7 @@ listen okd4-apps
     option                  tcplog
     mode tcp
     option tcpka
-    server okd4-master-0 ${cp_0}:80 check weight 1
-    server okd4-master-1 ${cp_1}:80 check weight 1
-    server okd4-master-2 ${cp_2}:80 check weight 1
+${cp_80}
 
 listen okd4-apps-ssl 
     bind ${lb_ip}:443
@@ -384,61 +415,59 @@ listen okd4-apps-ssl
     mode tcp
     option tcpka
     option tcp-check
-    server okd4-master-0 ${cp_0}:443 check weight 1
-    server okd4-master-1 ${cp_1}:443 check weight 1
-    server okd4-master-2 ${cp_2}:443 check weight 1
+${cp_443}
 EOF
 
 }
 
-function configNginx() {
+# function configNginx() {
 
-  local lb_ip=${1}
-  local cp_0=$(yq e ".control-plane.okd-hosts.[0].ip-addr" ${CLUSTER_CONFIG})
-  local cp_1=$(yq e ".control-plane.okd-hosts.[1].ip-addr" ${CLUSTER_CONFIG})
-  local cp_2=$(yq e ".control-plane.okd-hosts.[2].ip-addr" ${CLUSTER_CONFIG})
-  local bs=$(yq e ".bootstrap.ip-addr" ${CLUSTER_CONFIG})
+#   local lb_ip=${1}
+#   local cp_0=$(yq e ".control-plane.okd-hosts.[0].ip-addr" ${CLUSTER_CONFIG})
+#   local cp_1=$(yq e ".control-plane.okd-hosts.[1].ip-addr" ${CLUSTER_CONFIG})
+#   local cp_2=$(yq e ".control-plane.okd-hosts.[2].ip-addr" ${CLUSTER_CONFIG})
+#   local bs=$(yq e ".bootstrap.ip-addr" ${CLUSTER_CONFIG})
 
-cat << EOF > ${WORK_DIR}/nginx-${CLUSTER_NAME}.conf
-stream {
-    upstream okd4-api {
-        server ${bs}:6443 max_fails=3 fail_timeout=1s;  # bootstrap
-        server ${cp_0}:6443 max_fails=3 fail_timeout=1s;
-        server ${cp_1}:6443 max_fails=3 fail_timeout=1s;
-        server ${cp_2}:6443 max_fails=3 fail_timeout=1s;
-    }
-    upstream okd4-mc {
-        server ${bs}:22623 max_fails=3 fail_timeout=1s; # bootstrap
-        server ${cp_0}:22623 max_fails=3 fail_timeout=1s;
-        server ${cp_1}:22623 max_fails=3 fail_timeout=1s;
-        server ${cp_2}:22623 max_fails=3 fail_timeout=1s;
-    }
-    upstream okd4-https {
-        server ${cp_0}:443 max_fails=3 fail_timeout=1s;
-        server ${cp_1}:443 max_fails=3 fail_timeout=1s;
-        server ${cp_2}:443 max_fails=3 fail_timeout=1s;
-    }
-    upstream okd4-http {
-        server ${cp_0}:80 max_fails=3 fail_timeout=1s;
-        server ${cp_1}:80 max_fails=3 fail_timeout=1s;
-        server ${cp_2}:80 max_fails=3 fail_timeout=1s;
-    }
-    server {
-        listen ${lb_ip}:6443;
-        proxy_pass okd4-api;
-    }
-    server {
-        listen ${lb_ip}:22623;
-        proxy_pass okd4-mc;
-    }
-    server {
-        listen ${lb_ip}:443;
-        proxy_pass okd4-https;
-    }
-    server {
-        listen ${lb_ip}:80;
-        proxy_pass okd4-http;
-    }
-}
-EOF
-}
+#   cat <<EOF >${WORK_DIR}/nginx-${CLUSTER_NAME}.conf
+# stream {
+#     upstream okd4-api {
+#         server ${bs}:6443 max_fails=3 fail_timeout=1s;  # bootstrap
+#         server ${cp_0}:6443 max_fails=3 fail_timeout=1s;
+#         server ${cp_1}:6443 max_fails=3 fail_timeout=1s;
+#         server ${cp_2}:6443 max_fails=3 fail_timeout=1s;
+#     }
+#     upstream okd4-mc {
+#         server ${bs}:22623 max_fails=3 fail_timeout=1s; # bootstrap
+#         server ${cp_0}:22623 max_fails=3 fail_timeout=1s;
+#         server ${cp_1}:22623 max_fails=3 fail_timeout=1s;
+#         server ${cp_2}:22623 max_fails=3 fail_timeout=1s;
+#     }
+#     upstream okd4-https {
+#         server ${cp_0}:443 max_fails=3 fail_timeout=1s;
+#         server ${cp_1}:443 max_fails=3 fail_timeout=1s;
+#         server ${cp_2}:443 max_fails=3 fail_timeout=1s;
+#     }
+#     upstream okd4-http {
+#         server ${cp_0}:80 max_fails=3 fail_timeout=1s;
+#         server ${cp_1}:80 max_fails=3 fail_timeout=1s;
+#         server ${cp_2}:80 max_fails=3 fail_timeout=1s;
+#     }
+#     server {
+#         listen ${lb_ip}:6443;
+#         proxy_pass okd4-api;
+#     }
+#     server {
+#         listen ${lb_ip}:22623;
+#         proxy_pass okd4-mc;
+#     }
+#     server {
+#         listen ${lb_ip}:443;
+#         proxy_pass okd4-https;
+#     }
+#     server {
+#         listen ${lb_ip}:80;
+#         proxy_pass okd4-http;
+#     }
+# }
+# EOF
+# }
