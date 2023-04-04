@@ -79,3 +79,15 @@ labcli --destroy -b
 labcli --destroy -c
 ```
 
+### 部署ceph
+```
+labcli --ceph -i
+labcli --ceph -c
+or
+$ git clone --single-branch --branch v1.11.2 https://github.com/rook/rook.git
+cd rook/deploy/examples
+oc create -f crds.yaml -f common.yaml -f operator.yaml
+oc -n rook-ceph get pod
+# 验证 rook-ceph-operator 是 Running
+oc create -f cluster.yaml
+```

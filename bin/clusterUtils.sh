@@ -603,10 +603,18 @@ function mirrorCeph() {
 
 function installCeph() {
 
-  ${OC} apply -f ${CEPH_WORK_DIR}/install/crds.yaml
-  ${OC} apply -f ${CEPH_WORK_DIR}/install/common.yaml
-  ${OC} apply -f ${CEPH_WORK_DIR}/install/rbac.yaml
+  ${OC} apply -f ${CEPH_WORK_DIR}/deploy/examples/crds.yaml
+  ${OC} apply -f ${CEPH_WORK_DIR}/deploy/examples/common.yaml
+  # ${OC} apply -f ${CEPH_WORK_DIR}/install/rbac.yaml
   envsubst < ${CEPH_OPERATOR_FILE} | ${OC} apply -f -
+}
+
+function cleanCephOperator() {
+
+  ${OC} delete -f ${CEPH_WORK_DIR}/deploy/examples/crds.yaml
+  ${OC} delete -f ${CEPH_WORK_DIR}/deploy/examples/common.yaml
+  # ${OC} delete -f ${CEPH_WORK_DIR}/install/rbac.yaml
+  envsubst < ${CEPH_OPERATOR_FILE} | ${OC} delete -f -
 }
 
 function createCephCluster() {
@@ -661,28 +669,85 @@ function regPvc() {
   ${OC} patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"rolloutStrategy":"Recreate","managementState":"Managed","storage":{"pvc":{"claim":"registry-pvc"}}}}'
 }
 
+# function initCephVars() {
+#   export CEPH_WORK_DIR=${OKD_LAB_PATH}/${CLUSTER_NAME}.${DOMAIN}/ceph-work-dir
+#   # rm -rf ${CEPH_WORK_DIR}
+#   if [ -e ${CEPH_WORK_DIR} ]; then
+#       pushd ${CEPH_WORK_DIR}
+#       git pull 
+#       popd
+#   else
+#       git clone https://github.com/cgruver/lab-ceph.git ${CEPH_WORK_DIR}
+#   fi
+  
+
+#   export CEPH_CSI_VER=$(yq e ".cephcsi" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export CSI_NODE_DRIVER_REG_VER=$(yq e ".csi-node-driver-registrar" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export CSI_RESIZER_VER=$(yq e ".csi-resizer" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export CSI_PROVISIONER_VER=$(yq e ".csi-provisioner" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export CSI_SNAPSHOTTER_VER=$(yq e ".csi-snapshotter" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export CSI_ATTACHER_VER=$(yq e ".csi-attacher" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export ROOK_CEPH_VER=$(yq e ".rook-ceph" ${CEPH_WORK_DIR}/install/versions.yaml)
+#   export CEPH_VER=$(yq e ".ceph" ${CEPH_WORK_DIR}/install/versions.yaml)
+
+#   if [[ ${NO_LAB_PI} == "true" ]]
+#   then
+#     CEPH_OPERATOR_FILE=${CEPH_WORK_DIR}/install/operator-openshift-no-pi.yaml
+#     CEPH_CLUSTER_FILE=${CEPH_WORK_DIR}/install/cluster-no-pi.yaml
+#   else
+#     CEPH_OPERATOR_FILE=${CEPH_WORK_DIR}/install/operator-openshift.yaml
+#     CEPH_CLUSTER_FILE=${CEPH_WORK_DIR}/install/cluster.yaml
+#   fi
+
+#   for j in "$@"
+#   do
+#     case $j in
+#       -m)
+#         mirrorCeph
+#       ;;
+#       -i)     
+#         installCeph
+#       ;;
+#       -c)
+#         createCephCluster
+#       ;;
+#       -r)
+#         regPvc
+#       ;;
+#       -clean)
+#         cleanCephOperator
+#       ;;
+#       *)
+#         # catch all
+#       ;;
+#     esac
+#   done
+# }
+
+
 function initCephVars() {
   export CEPH_WORK_DIR=${OKD_LAB_PATH}/${CLUSTER_NAME}.${DOMAIN}/ceph-work-dir
-  rm -rf ${CEPH_WORK_DIR}
-  git clone https://github.com/cgruver/lab-ceph.git ${CEPH_WORK_DIR}
-
-  export CEPH_CSI_VER=$(yq e ".cephcsi" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export CSI_NODE_DRIVER_REG_VER=$(yq e ".csi-node-driver-registrar" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export CSI_RESIZER_VER=$(yq e ".csi-resizer" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export CSI_PROVISIONER_VER=$(yq e ".csi-provisioner" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export CSI_SNAPSHOTTER_VER=$(yq e ".csi-snapshotter" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export CSI_ATTACHER_VER=$(yq e ".csi-attacher" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export ROOK_CEPH_VER=$(yq e ".rook-ceph" ${CEPH_WORK_DIR}/install/versions.yaml)
-  export CEPH_VER=$(yq e ".ceph" ${CEPH_WORK_DIR}/install/versions.yaml)
-
-  if [[ ${NO_LAB_PI} == "true" ]]
-  then
-    CEPH_OPERATOR_FILE=${CEPH_WORK_DIR}/install/operator-openshift-no-pi.yaml
-    CEPH_CLUSTER_FILE=${CEPH_WORK_DIR}/install/cluster-no-pi.yaml
+  # rm -rf ${CEPH_WORK_DIR}
+  if [ -e ${CEPH_WORK_DIR} ]; then
+      pushd ${CEPH_WORK_DIR}
+      git pull 
+      popd
   else
-    CEPH_OPERATOR_FILE=${CEPH_WORK_DIR}/install/operator-openshift.yaml
-    CEPH_CLUSTER_FILE=${CEPH_WORK_DIR}/install/cluster.yaml
+      git clone --single-branch --branch v1.11.2 https://github.com/rook/rook.git ${CEPH_WORK_DIR}
   fi
+  
+
+  # export CEPH_CSI_VER=$(yq e ".cephcsi" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export CSI_NODE_DRIVER_REG_VER=$(yq e ".csi-node-driver-registrar" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export CSI_RESIZER_VER=$(yq e ".csi-resizer" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export CSI_PROVISIONER_VER=$(yq e ".csi-provisioner" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export CSI_SNAPSHOTTER_VER=$(yq e ".csi-snapshotter" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export CSI_ATTACHER_VER=$(yq e ".csi-attacher" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export ROOK_CEPH_VER=$(yq e ".rook-ceph" ${CEPH_WORK_DIR}/install/versions.yaml)
+  # export CEPH_VER=$(yq e ".ceph" ${CEPH_WORK_DIR}/install/versions.yaml)
+
+  CEPH_OPERATOR_FILE=${CEPH_WORK_DIR}/deploy/examples/operator-openshift.yaml
+  CEPH_CLUSTER_FILE=${CEPH_WORK_DIR}/deploy/examples/cluster.yaml
 
   for j in "$@"
   do
@@ -698,6 +763,9 @@ function initCephVars() {
       ;;
       -r)
         regPvc
+      ;;
+      -clean)
+        cleanCephOperator
       ;;
       *)
         # catch all

@@ -1,0 +1,35 @@
+# 非root用户
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+export KUBECONFIG=$HOME/.kube/config
+kubectl get nodes
+
+#删除rook-ceph卡住尝试这个
+for CRD in $(kubectl get crd -n rook-ceph | awk '/ceph.rook.io/ {print $1}'); do
+    kubectl get -n rook-ceph "$CRD" -o name | \
+    xargs -I {} kubectl patch -n rook-ceph {} --type merge -p '{"metadata":{"finalizers": []}}'
+done
+
+#删除rook-ceph后terminating
+NAMESPACE=rook-ceph
+kubectl proxy &
+kubectl get namespace $NAMESPACE -o json |jq '.spec = {"finalizers":[]}' >temp.json
+curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
+
+#批量删除指定状态pod
+kubectl get pods -n cert-manager | grep Completed | awk '{print $1}' | xargs kubectl delete pod -n cert-manager
+
+#安装ceph-iscsi--ubuntu20.04
+sudo apt install ceph-iscsi ceph-common rsync
+systemctl daemon-reload
+systemctl enable rbd-target-gw
+systemctl start rbd-target-gw
+systemctl enable rbd-target-api
+systemctl start rbd-target-api
+rsync -a --exclude='rbdmap' /etc/ceph/ username@ipaddr:/etc/ceph/
+
+#获取ceph密码
+kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+
+kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash
