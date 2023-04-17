@@ -60,7 +60,8 @@ labcli --deploy -c
 ```
 labcli --monitor -j
 ```
-## 安装完成后添加worker节点
+# 等待安装完成...
+## 添加worker节点
 ### 生成worker部署文件
 ```
 labcli --deploy -w
@@ -69,6 +70,19 @@ labcli --deploy -w
 ```
 labcli --csr
 ```
+### 全部部署完成后想新添加worker节点
+编辑${HOME}/okd-lab/lab-config/cluster-configs/3-node-no-pi.yaml文件
+在yaml文件中新增信息,登录openwrt页面设置静态绑定关系
+```
+compute-nodes:
+  - metal: true
+    mac-addr: "00:0c:29:10:8c:02"
+    boot-dev: /dev/sda
+    ip-addr: 10.11.12.234
+```
+### 删除worker节点
+节点名称通过查看${HOME}/okd-lab/lab-config/cluster-configs/3-node-no-pi.yaml确定
+labcli --destroy -w=节点名称
 ## 其他操作
 ### 卸载引导节点
 ```
@@ -78,6 +92,7 @@ labcli --destroy -b
 ```
 labcli --destroy -c
 ```
+
 
 ### 部署ceph
 ```
