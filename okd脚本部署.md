@@ -58,7 +58,9 @@ labcli --deploy -c
 以及/data/tftpboot/下的文件是否都有大小,之后开机bootstrap master
 ### 查看日志
 ```
-labcli --monitor -j
+labcli --monitor -b //bootstrap进度
+labcli --monitor -j //引导节点journal log 
+labcli --monitor -i //完成结果
 ```
 # 等待安装完成...
 ## 添加worker节点
@@ -91,6 +93,10 @@ labcli --destroy -b
 ### 卸载集群节点
 ```
 labcli --destroy -c
+```
+### 取消master可调度
+```
+labcli --config-infra
 ```
 
 

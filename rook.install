@@ -19,7 +19,7 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.
 
 #批量删除指定状态pod
 kubectl get pods -n cert-manager | grep Completed | awk '{print $1}' | xargs kubectl delete pod -n cert-manager
-
+oc get pod -n kubevirt-hyperconverged|grep CrashLoopBackOff | awk '{print $1}' | xargs oc delete pod -n kubevirt-hyperconverged
 #安装ceph-iscsi--ubuntu20.04
 sudo apt install ceph-iscsi ceph-common rsync
 systemctl daemon-reload
@@ -33,3 +33,69 @@ rsync -a --exclude='rbdmap' /etc/ceph/ username@ipaddr:/etc/ceph/
 kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
 kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash
+
+dd if=/dev/zero of=test bs=8k count=10000 oflag=direct
+http://10.11.12.1/install/repos/BaseOS/x86_64/os/bionic-server-cloudimg-amd64.img
+
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  labels:
+    kubevirt.io/domain: testvm
+    kubevirt.io/size: small
+    debugLogs: "true"
+    logVerbosity: "6"
+  name: testvm
+  namespace: rook-ceph
+spec:
+  domain:
+    cpu:
+      cores: 1
+      sockets: 1
+      threads: 1
+    devices:
+      disks:
+        - bootOrder: 1
+          disk:
+            bus: virtio
+          name: rootdisk
+        - bootOrder: 2
+          disk:
+            bus: virtio
+          name: cloudinitdisk
+      interfaces:
+        - macAddress: '02:71:74:00:00:03'
+          masquerade: {}
+          model: virtio
+          name: default
+      networkInterfaceMultiqueue: true
+      rng: {}
+    features:
+      acpi: {}
+      smm:
+        enabled: true
+    firmware:
+      bootloader:
+        efi: {}
+    machine:
+      type: q35
+    resources:
+      requests:
+        memory: 2Gi
+  hostname: example
+  networks:
+    - name: default
+      pod: {}
+  terminationGracePeriodSeconds: 180
+  volumes:
+    - containerDisk:
+        image: 'quay.io/containerdisks/fedora:36'
+      name: rootdisk
+    - cloudInitNoCloud:
+        userData: |-
+          #cloud-config
+          user: fedora
+          password: fedora
+          chpasswd: { expire: False }
+      name: cloudinitdisk
